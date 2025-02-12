@@ -50,7 +50,10 @@ export const sendCartData = (cart) => {
         {
           // Con el PUT los datos no se agregaran en una lista de datos, sino que sobreescribiran los datos existentes.
           method: "PUT",
-          body: JSON.stringify(cart),
+          body: JSON.stringify({
+            items: cart.items,
+            totalQuantity: cart.totalQuantity,
+          }), 
         }
       );
 
