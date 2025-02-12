@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+import { uiActions } from "./ui-slice";
+
 const initialState = { items: [], totalQuantity: 0 };
 
 const cartSlice = createSlice({
@@ -36,6 +38,60 @@ const cartSlice = createSlice({
     },
   },
 });
+
+// despues del objeto slice.
+
+export const sendCartData = (cart) => {
+  // retorno otra funcion. si, en js puedo crear funciones que retornen funciones.
+  return async (dispatch) => {
+    // Pendiente
+    dispatch(
+      uiActions.showNotification({
+        status: "pending",
+        title: "Sending...",
+        message: "Sending cart data!",
+      })
+    );
+
+    const sendRequest = async () => {
+      const response = await fetch(
+        "https://react-htt-34fa6-default-rtdb.firebaseio.com/cart.json",
+        {
+          // Con el PUT los datos no se agregaran en una lista de datos, sino que sobreescribiran los datos existentes.
+          method: "PUT",
+          body: JSON.stringify(cart),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Sending cart data failed.");
+      }
+    };
+    try {
+      await sendRequest();
+
+      // Exito
+      dispatch(
+        uiActions.showNotification({
+          status: "success",
+          title: "Success!",
+          message: "Sent cart data successfully!",
+        })
+      );
+    } catch (error) {
+      // Error
+      dispatch(
+        uiActions.showNotification({
+          status: "error",
+          title: "Error!",
+          message: "Sending cart data failed!",
+        })
+      );
+    }
+  };
+};
+// no estoy ejecutando este codigo en un reducer, por lo que aqui pueden haber efectos secundarios
+// y codigo asincrono.
 
 export const cartActions = cartSlice.actions;
 
